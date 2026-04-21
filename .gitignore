@@ -1,0 +1,14 @@
+.DS_Store
+.idea/
+.vscode/
+node_modules/
+vendor/
+*.log
+.env
+/backend/vendor/
+/frontend/build/
+/frontend/.dart_tool/
+/frontend/.fvm/
+/frontend/windows/flutter/ephemeral
+/frontend/linux/flutter/ephemeral
+/frontend/macos/Flutter/ephemeral

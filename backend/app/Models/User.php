@@ -21,10 +21,21 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'role',
         'email',
         'phone',
+        'home_address_id',
+        'home_address',
+        'home_lat',
+        'home_lng',
+        'national_id',
         'password',
     ];
+
+    public function address()
+    {
+        return $this->belongsTo(\App\Domains\Addressing\Models\Address::class, 'home_address_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('s2_cell_id')->unique();
-            $table->string('address_str');
+            $table->string('address_str')->nullable();
             $table->string('neighborhood')->nullable();
+            $table->enum('type', ['residential', 'commercial', 'landmark', 'utility_node', 'other'])->default('residential');
+            $table->boolean('is_verified')->default(false);
+            $table->json('metadata')->nullable(); 
             $table->geometry('location', 'point', 4326)->nullable();
             $table->timestamps();
 

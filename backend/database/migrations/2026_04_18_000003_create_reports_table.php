@@ -27,14 +27,14 @@ return new class extends Migration
             // Workflow State Machine
             $table->enum('status', [
                 'started', 
-                'govt_review', 
+                'govt_received', 
+                'external_transfer',
                 'surveyor_assigned', 
                 'site_visited', 
-                'engineering_project', 
-                'tender_approved', 
-                'site_execution', 
-                'admin_approved', 
-                'survey_quality', 
+                'engineering_phase', 
+                'bidding_phase', 
+                'execution', 
+                'admin_approval', 
                 'resolved'
             ])->default('started');
 

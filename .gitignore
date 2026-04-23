@@ -12,3 +12,6 @@ vendor/
 /frontend/windows/flutter/ephemeral
 /frontend/linux/flutter/ephemeral
 /frontend/macos/Flutter/ephemeral
+
+# Local project management docs
+tech_lead_roadmap_namerha_sah.md

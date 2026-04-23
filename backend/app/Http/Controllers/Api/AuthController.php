@@ -43,27 +43,47 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|unique:users',
+                'password' => 'required|string|min:6',
+                'home_address' => 'nullable|string',
+                'home_lat' => 'nullable|numeric',
+                'home_lng' => 'nullable|numeric',
+                'national_id' => 'nullable|string|unique:users',
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'password' => Hash::make($request->password),
-        ]);
+            $user = User::create([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'home_address' => $request->home_address,
+                'home_lat' => $request->home_lat,
+                'home_lng' => $request->home_lng,
+                'national_id' => $request->national_id,
+                'password' => Hash::make($request->password),
+            ]);
 
-        $token = $user->createToken('mobile_app')->plainTextToken;
+            $token = $user->createToken('mobile_app')->plainTextToken;
 
-        return response()->json([
-            'message' => 'تم إنشاء الحساب بنجاح',
-            'token' => $token,
-            'user' => [
-                'name' => $user->name,
-                'phone' => $user->phone,
-            ]
-        ], 201);
+            return response()->json([
+                'message' => 'تم إنشاء الحساب بنجاح',
+                'token' => $token,
+                'user' => [
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                ]
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'بيانات التحقق غير صحيحة',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Registration Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'حدث خطأ في السيرفر: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

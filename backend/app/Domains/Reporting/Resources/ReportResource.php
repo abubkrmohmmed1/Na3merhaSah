@@ -20,8 +20,11 @@ class ReportResource extends JsonResource
         // Front-end requested a color representation for the status
         $statusColor = match($this->status) {
             'resolved' => 'green',
-            'started', 'govt_review', 'surveyor_assigned', 'site_visited' => 'red',
-            default => 'orange', // For intermediate steps like engineering and execution
+            'external_transfer' => 'gray',
+            'started', 'govt_received' => 'blue',
+            'surveyor_assigned', 'site_visited' => 'orange',
+            'engineering_phase', 'bidding_phase', 'execution', 'admin_approval' => 'red',
+            default => 'orange',
         };
 
         return [
@@ -31,6 +34,8 @@ class ReportResource extends JsonResource
             'thumbnail' => $thumbnail,
             'status' => $this->status,
             'status_color' => $statusColor,
+            'location_lat' => $this->location_lat,
+            'location_lng' => $this->location_lng,
             'created_at' => $this->created_at?->diffForHumans(),
         ];
     }

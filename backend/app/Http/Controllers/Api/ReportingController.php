@@ -17,12 +17,12 @@ class ReportingController extends Controller
             'lng' => 'required|numeric',
             'description' => 'required|string',
             'category_id' => 'required|integer',
-            'images' => 'required|array',
+            'images' => 'sometimes|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $report = $action->execute(
-            $request->all(),
+            array_merge($request->all(), ['user_id' => auth()->id()]),
             $request->file('images', [])
         );
 
@@ -36,6 +36,9 @@ class ReportingController extends Controller
     {
         // For Task 2.4 (Listing)
         $reports = \App\Domains\Reporting\Models\Report::with('address')
+            ->select('*')
+            ->selectRaw('ST_X(location) as location_lng, ST_Y(location) as location_lat')
+            ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 

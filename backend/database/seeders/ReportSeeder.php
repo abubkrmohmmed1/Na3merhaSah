@@ -30,7 +30,7 @@ class ReportSeeder extends Seeder
             [
                 'description' => 'انقطاع كهرباء متكرر في المنطقة منذ 3 أيام',
                 'category_id' => 2, // كهرباء
-                'status' => 'govt_review',
+                'status' => 'started',
             ],
             [
                 'description' => 'حفرة عميقة في الطريق تشكل خطراً على السيارات',
@@ -70,7 +70,7 @@ class ReportSeeder extends Seeder
             [
                 'description' => 'تسرب غاز بالقرب من المدرسة يحتاج تدخل عاجل',
                 'category_id' => 6, // طوارئ
-                'status' => 'govt_review',
+                'status' => 'started',
             ],
             [
                 'description' => 'انهيار جزئي في رصيف المشاة',

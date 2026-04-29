@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids; // Add this line
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids; // Add HasUuids here
 
     /**
      * The attributes that are mass assignable.
@@ -20,9 +22,22 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'role',
         'email',
+        'phone',
+        'home_address_id',
+        'home_address',
+        'home_lat',
+        'home_lng',
+        'national_id',
+        'birth_date',
         'password',
     ];
+
+    public function address()
+    {
+        return $this->belongsTo(\App\Domains\Addressing\Models\Address::class, 'home_address_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -32,6 +47,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'national_id',
     ];
 
     /**

@@ -45,17 +45,17 @@ class ReportSeeder extends Seeder
             [
                 'description' => 'أعمدة إنارة محطمة في الشارع الفرعي',
                 'category_id' => 2, // كهرباء
-                'status' => 'engineering_project',
+                'status' => 'engineering_phase',
             ],
             [
                 'description' => 'تصدع في جدار المبنى الحكومي بسبب الأمطار',
                 'category_id' => 5, // مباني
-                'status' => 'tender_approved',
+                'status' => 'bidding_phase',
             ],
             [
                 'description' => 'ماسورة مكسورة تهدر المياه منذ أسبوع',
                 'category_id' => 1, // مياه
-                'status' => 'site_execution',
+                'status' => 'execution',
             ],
             [
                 'description' => 'تشققات في الأسفلت بعد موسم الأمطار',
@@ -94,6 +94,7 @@ class ReportSeeder extends Seeder
                 'address_id' => $address->id,
                 'location' => DB::raw("(SELECT location FROM addresses WHERE id = '{$address->id}')"),
                 's2_cell_id' => $address->s2_cell_id,
+                'plus_code' => $address->plus_code,
                 'description' => $report['description'],
                 'category_id' => $report['category_id'],
                 'images' => json_encode([

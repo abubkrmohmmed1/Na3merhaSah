@@ -22,8 +22,8 @@ class ReportResource extends JsonResource
             'resolved' => 'green',
             'external_transfer' => 'gray',
             'started', 'govt_received' => 'blue',
-            'surveyor_assigned', 'site_visited' => 'orange',
-            'engineering_phase', 'bidding_phase', 'execution', 'admin_approval' => 'red',
+            'surveyor_assigned', 'site_visited', 'admin_approval' => 'orange',
+            'engineering_phase', 'bidding_phase', 'execution' => 'red',
             default => 'orange',
         };
 
@@ -31,12 +31,20 @@ class ReportResource extends JsonResource
             'id' => $this->id,
             'title' => $this->description ? str()->limit($this->description, 30) : 'بلاغ مدني',
             'digital_address' => $this->address ? $this->address->address_str : 'جاري التحديد...',
+            'plus_code' => $this->plus_code,
             'thumbnail' => $thumbnail,
             'status' => $this->status,
             'status_color' => $statusColor,
             'location_lat' => $this->location_lat,
             'location_lng' => $this->location_lng,
             'created_at' => $this->created_at?->diffForHumans(),
+            // New Surveyor Fields for the App
+            'surveyor_decision' => $this->surveyor_decision,
+            'surveyor_notes' => $this->surveyor_notes,
+            'surveyor_area' => $this->surveyor_area,
+            'surveyor_images' => $this->surveyor_images,
+            'first_response_at' => $this->first_response_at?->toIso8601String(),
+            'resolved_at' => $this->resolved_at?->toIso8601String(),
         ];
     }
 }

@@ -4,12 +4,14 @@ namespace App\Domains\Reporting\Actions;
 
 use App\Domains\Reporting\Models\Report;
 use App\Domains\Addressing\Actions\ReverseGeocodeAction;
+use App\Domains\Spatial\Services\S2GeometryService;
 use Illuminate\Support\Facades\Storage;
 
 class ReportIssueAction
 {
     public function __construct(
-        protected ReverseGeocodeAction $reverseGeocodeAction
+        protected ReverseGeocodeAction $reverseGeocodeAction,
+        protected S2GeometryService $s2Service
     ) {}
 
     public function execute(array $data, array $imageFiles): Report
@@ -23,6 +25,9 @@ class ReportIssueAction
             (float) $data['lat'],
             (float) $data['lng']
         );
+
+        // Generate high-precision Plus Code for this specific point
+        $plusCode = $this->s2Service->generatePlusCode((float) $data['lat'], (float) $data['lng']);
 
         // 3. Handle Image Uploads (Simulated storage for now)
         $imagePaths = [];
@@ -44,8 +49,9 @@ class ReportIssueAction
             'user_id' => $data['user_id'] ?? null, // In practice, from auth()
             'description' => $data['description'],
             'category_id' => $data['category_id'],
-            'location' => "SRID=4326;POINT({$data['lng']} {$data['lat']})",
-            's2_cell_id' => $address ? $address->s2_cell_id : 'unmapped',
+            'location' => \DB::raw("ST_SetSRID(ST_MakePoint(" . (float) $data['lng'] . ", " . (float) $data['lat'] . "), 4326)"),
+            's2_cell_id' => $address ? $address->s2_cell_id : $this->s2Service->latLngToToken((float) $data['lat'], (float) $data['lng']),
+            'plus_code' => $plusCode,
             'address_id' => $address ? $address->id : null,
             'images' => $imagePaths,
             'status' => 'started',

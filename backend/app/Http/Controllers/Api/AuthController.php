@@ -48,6 +48,7 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|unique:users',
                 'password' => 'required|string|min:6',
+                'birth_date' => 'nullable|date',
                 'home_address' => 'nullable|string',
                 'home_lat' => 'nullable|numeric',
                 'home_lng' => 'nullable|numeric',
@@ -57,6 +58,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'birth_date' => $request->birth_date,
                 'home_address' => $request->home_address,
                 'home_lat' => $request->home_lat,
                 'home_lng' => $request->home_lng,
@@ -80,9 +82,11 @@ class AuthController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Registration Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Registration Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
             return response()->json([
-                'message' => 'حدث خطأ في السيرفر: ' . $e->getMessage()
+                'message' => 'حدث خطأ في السيرفر، يرجى المحاولة لاحقاً'
             ], 500);
         }
     }

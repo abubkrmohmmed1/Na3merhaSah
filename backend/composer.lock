@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f28cfd6bceb94b63faff09939d53cec",
+    "content-hash": "29730f41cad61fca4d676bcc4a3b3230",
     "packages": [
         {
             "name": "brick/math",
@@ -65,6 +65,62 @@
                 }
             ],
             "time": "2026-02-10T14:33:43+00:00"
+        },
+        {
+            "name": "c3t4r4/openlocationcode",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/c3t4r4/open-location-code.git",
+                "reference": "499b95ba121dee38e9e6fe7359cc9e9e0c5cfa4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/c3t4r4/open-location-code/zipball/499b95ba121dee38e9e6fe7359cc9e9e0c5cfa4b",
+                "reference": "499b95ba121dee38e9e6fe7359cc9e9e0c5cfa4b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "*",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.0",
+                "squizlabs/php_codesniffer": "^3.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OpenLocationCode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "c3t4r4",
+                    "homepage": "https://github.com/c3t4r4/open-location-code"
+                }
+            ],
+            "description": "Open Location Code (Plus Codes) implementation for PHP - Convert locations to and from short codes - Forked from google/open-location-code",
+            "homepage": "https://github.com/c3t4r4/open-location-code",
+            "keywords": [
+                "coordinates",
+                "geocoding",
+                "latitude",
+                "location",
+                "longitude",
+                "open-location-code",
+                "plus-codes"
+            ],
+            "support": {
+                "issues": "https://github.com/c3t4r4/open-location-code/issues",
+                "source": "https://github.com/c3t4r4/open-location-code/tree/v1.1.1"
+            },
+            "time": "2025-10-16T22:18:50+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",

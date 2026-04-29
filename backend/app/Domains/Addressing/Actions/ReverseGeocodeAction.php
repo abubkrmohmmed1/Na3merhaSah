@@ -23,9 +23,23 @@ class ReverseGeocodeAction
         // we might eventually perform a PostGIS distance query.
         // For the start of Sprint 2, we rely on the S2 Spatial index.
         if (!$address) {
-            // Find nearest using PostGIS if S2 exact match fails
-            $address = Address::orderByRaw("location <-> 'SRID=4326;POINT($lng $lat)'::geometry")
-                ->first();
+            try {
+                // Find nearest using PostGIS if S2 exact match fails
+                $address = Address::orderByRaw("location <-> ST_SetSRID(ST_MakePoint(?, ?), 4326)", [(float) $lng, (float) $lat])
+                    ->first();
+            } catch (\Exception $e) {
+                \Log::warning("Spatial query failed, PostGIS might be missing: " . $e->getMessage());
+                $address = null;
+            }
+        }
+
+        if (!$address) {
+            // If the database is completely empty, fallback to the token itself
+            $address = new Address([
+                's2_cell_id' => $token,
+                'address_str' => "كود: $token",
+                'neighborhood' => 'غير محدد',
+            ]);
         }
 
         return $address;

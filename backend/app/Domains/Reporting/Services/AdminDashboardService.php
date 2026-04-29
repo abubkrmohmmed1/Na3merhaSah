@@ -10,20 +10,29 @@ class AdminDashboardService
 {
     public function getDashboardMetrics(): array
     {
-        return [
-            'reception_metrics'  => $this->getReceptionMetrics(),
-            'response_metrics'   => $this->getResponseMetrics(),
-            'completion_metrics' => $this->getCompletionMetrics(),
-        ];
-    }
+        // PERF-03: Single aggregated query instead of 5+ separate count queries
+        $stats = Report::selectRaw("
+            count(*) as total_reports,
+            count(case when status = ? then 1 end) as resolved_count,
+            count(case when created_at >= ? then 1 end) as monthly_reports
+        ", [Report::STATUS_RESOLVED, Carbon::now()->startOfMonth()])
+        ->first();
 
-    private function getReceptionMetrics(): array
-    {
+        $total = $stats->total_reports;
+        $resolved = $stats->resolved_count;
+
         return [
-            'total_reports'   => Report::count(),
-            'monthly_reports' => Report::whereMonth('created_at', Carbon::now()->month)->count(),
-            'by_category'     => Report::select('category_id', DB::raw('count(*) as total'))
-                                        ->groupBy('category_id')->get(),
+            'reception_metrics'  => [
+                'total_reports'   => $total,
+                'monthly_reports' => $stats->monthly_reports,
+                'by_category'     => Report::select('category_id', DB::raw('count(*) as total'))
+                                            ->groupBy('category_id')->get(),
+            ],
+            'response_metrics'   => $this->getResponseMetrics(),
+            'completion_metrics' => [
+                'completion_rate' => $total > 0 ? round(($resolved / $total) * 100, 2) : 0,
+                'pending_count'   => $total - $resolved,
+            ],
         ];
     }
 
@@ -40,17 +49,6 @@ class AdminDashboardService
         return [
             'avg_first_response_seconds' => round($avgResponse),
             'avg_resolution_seconds'     => round($avgResolution),
-        ];
-    }
-
-    private function getCompletionMetrics(): array
-    {
-        $total = Report::count();
-        $closed = Report::where('status', Report::STATUS_RESOLVED)->count();
-        
-        return [
-            'completion_rate' => $total > 0 ? round(($closed / $total) * 100, 2) : 0,
-            'pending_count'   => Report::where('status', '!=', Report::STATUS_RESOLVED)->count(),
         ];
     }
 }

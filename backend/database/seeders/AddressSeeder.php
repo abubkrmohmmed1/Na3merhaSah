@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use OpenLocationCode\OpenLocationCode;
 
 class AddressSeeder extends Seeder
 {
@@ -27,7 +28,6 @@ class AddressSeeder extends Seeder
             ['address_str' => 'حي الرياض - شارع 61 - منزل 20', 'neighborhood' => 'الرياض', 'lat' => 15.5801, 'lng' => 32.5402],
             ['address_str' => 'حي المنشية - مربع 4 - منزل 16', 'neighborhood' => 'المنشية', 'lat' => 15.5950, 'lng' => 32.5300],
             ['address_str' => 'حي الصحافة - شارع الصحافة - منزل 8', 'neighborhood' => 'الصحافة', 'lat' => 15.5700, 'lng' => 32.5550],
-            ['address_str' => 'حي الأمارات - مربع 7 - منزل 25', 'neighborhood' => 'الأمارات', 'lat' => 15.5650, 'lng' => 32.5480],
             ['address_str' => 'حي جبرة - مربع 20 - منزل 1', 'neighborhood' => 'جبرة', 'lat' => 15.5500, 'lng' => 32.5700],
             // بحري
             ['address_str' => 'حي الحلفايا - مربع 11 - منزل 6', 'neighborhood' => 'الحلفايا', 'lat' => 15.6700, 'lng' => 32.5200],
@@ -37,10 +37,12 @@ class AddressSeeder extends Seeder
         foreach ($addresses as $addr) {
             $id = Str::uuid();
             $token = 's2_' . substr(md5($addr['lat'] . $addr['lng'] . '21'), 0, 7);
+            $plusCode = OpenLocationCode::encode($addr['lat'], $addr['lng']);
 
             DB::table('addresses')->insert([
                 'id' => $id,
                 's2_cell_id' => $token,
+                'plus_code' => $plusCode,
                 'address_str' => $addr['address_str'],
                 'neighborhood' => $addr['neighborhood'],
                 'location' => DB::raw("ST_SetSRID(ST_MakePoint({$addr['lng']}, {$addr['lat']}), 4326)"),

@@ -6,12 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Domains\Reporting\Models\Report;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class AdminDashboardController extends Controller
 {
-    /**
-     * Get KPIs and statistics for Nizar's Dashboard.
-     */
+    #[OA\Get(
+        path: '/api/admin/kpi',
+        operationId: 'adminKpis',
+        summary: 'مؤشرات الأداء والإحصائيات (KPIs)',
+        description: 'جلب بيانات تحليلية مفصلة للوحة التحكم تشمل البلاغات حسب التصنيف والحالة.',
+        tags: ['Admin'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(response: 200, description: 'مؤشرات الأداء')]
     public function index(): JsonResponse
     {
         $totalReports = Report::count();

@@ -8,9 +8,35 @@ use App\Domains\Reporting\Models\Report;
 use App\Domains\Reporting\Resources\ReportResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 class ReportingController extends Controller
 {
+    #[OA\Post(
+        path: '/api/reports',
+        operationId: 'storeReport',
+        summary: 'رفع بلاغ جديد',
+        description: 'إنشاء بلاغ جديد بالموقع والصور والوصف.',
+        tags: ['Reports'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\MediaType(
+            mediaType: 'multipart/form-data',
+            schema: new OA\Schema(
+                required: ['lat', 'lng', 'description', 'category_id'],
+                properties: [
+                    new OA\Property(property: 'lat', type: 'number', example: 24.7136),
+                    new OA\Property(property: 'lng', type: 'number', example: 46.6753),
+                    new OA\Property(property: 'description', type: 'string', example: 'يوجد تسريب مياه في الشارع'),
+                    new OA\Property(property: 'category_id', type: 'integer', example: 1),
+                    new OA\Property(property: 'images[]', type: 'array', items: new OA\Items(type: 'string', format: 'binary'))
+                ]
+            )
+        )
+    )]
+    #[OA\Response(response: 201, description: 'تم إنشاء البلاغ')]
     public function store(Request $request, ReportIssueAction $action): JsonResponse
     {
         $request->validate([
@@ -33,12 +59,44 @@ class ReportingController extends Controller
         ], 201);
     }
 
+    #[OA\Get(
+        path: '/api/reports/{id}',
+        operationId: 'showReport',
+        summary: 'عرض تفاصيل بلاغ محدد',
+        description: 'جلب تفاصيل البلاغ بالمعرف الخاص به.',
+        tags: ['Reports'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))]
+    #[OA\Response(response: 200, description: 'نجاح')]
+    #[OA\Response(response: 404, description: 'البلاغ غير موجود')]
     public function show(string $id)
     {
         $report = Report::withCoordinates()->with('address')->findOrFail($id);
         return new ReportResource($report);
     }
 
+    #[OA\Post(
+        path: '/api/reports/{id}/feedback',
+        operationId: 'reportFeedback',
+        summary: 'تقييم البلاغ بعد إغلاقه',
+        description: 'إضافة تقييم من المواطن على جودة حل المشكلة.',
+        tags: ['Reports'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['user_rating'],
+            properties: [
+                new OA\Property(property: 'user_rating', type: 'integer', example: 5),
+                new OA\Property(property: 'user_feedback', type: 'string', example: 'عمل ممتاز وسريع')
+            ]
+        )
+    )]
+    #[OA\Response(response: 200, description: 'تم التقييم بنجاح')]
+    #[OA\Response(response: 403, description: 'غير مصرح')]
     public function feedback(Request $request, string $id)
     {
         $request->validate([
@@ -71,6 +129,22 @@ class ReportingController extends Controller
         return response()->json(['message' => 'Feedback submitted successfully']);
     }
 
+    #[OA\Get(
+        path: '/api/reports',
+        operationId: 'getUserReports',
+        summary: 'جلب قائمة بلاغات المواطن',
+        description: 'ترجع هذه الواجهة قائمة بجميع البلاغات التي رفعها المستخدم الحالي.',
+        tags: ['Reports'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'عملية ناجحة'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'غير مصرح (Unauthenticated)'
+    )]
     public function index(Request $request): JsonResponse
     {
         $reports = \App\Domains\Reporting\Models\Report::withCoordinates()

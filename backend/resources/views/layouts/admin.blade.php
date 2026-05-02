@@ -142,7 +142,6 @@
         .content {
             flex-grow: 1;
         }
-
     </style>
     @yield('styles')
 </head>
@@ -177,10 +176,10 @@
             </div>
             <div class="topbar-left">
                 <div class="user-info">
-                    <span class="user-name">عبدالحي محمود</span>
-                    <span class="user-role">منسق ادارة عمليات</span>
+                    <span class="user-name">{{ auth()->user()?->name ?? 'مستخدم' }}</span>
+                    <span class="user-role">{{ auth()->user()?->role ?? 'مسؤول النظام' }}</span>
                 </div>
-                <img src="https://ui-avatars.com/api/?name=AM&background=random" class="user-avatar" alt="Avatar">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Admin') }}&background=EAB308&color=fff" class="user-avatar" alt="Avatar">
             </div>
         </div>
         <div class="content">

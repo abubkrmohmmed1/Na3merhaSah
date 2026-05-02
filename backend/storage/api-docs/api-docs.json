@@ -1,0 +1,437 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "توثيق واجهات نظام نعمرها صح",
+        "description": "API Documentation for Namerha Sah platform",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/address/reverse": {
+            "post": {
+                "tags": [
+                    "Addressing"
+                ],
+                "summary": "جلب العنوان من الإحداثيات",
+                "description": "تحويل خطوط الطول والعرض (lat, lng) إلى عنوان مقروء S2 Token.",
+                "operationId": "addressReverse",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "lat",
+                                    "lng"
+                                ],
+                                "properties": {
+                                    "lat": {
+                                        "type": "number",
+                                        "example": 24.7136
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "example": 46.6753
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "نجاح"
+                    },
+                    "404": {
+                        "description": "لم يتم العثور على عنوان"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/address/search": {
+            "get": {
+                "tags": [
+                    "Addressing"
+                ],
+                "summary": "البحث عن عنوان",
+                "description": "البحث النصي عن العناوين في قاعدة البيانات الجغرافية.",
+                "operationId": "addressSearch",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "كلمة البحث",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "للبحث الأقرب للموقع",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "للبحث الأقرب للموقع",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "نتائج البحث"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "إحصائيات لوحة التحكم (مبسط)",
+                "description": "جلب ملخص مبسط للوحة التحكم مع دور المستخدم.",
+                "operationId": "adminDashboard",
+                "responses": {
+                    "200": {
+                        "description": "بيانات اللوحة الأساسية"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/kpi": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "مؤشرات الأداء والإحصائيات (KPIs)",
+                "description": "جلب بيانات تحليلية مفصلة للوحة التحكم تشمل البلاغات حسب التصنيف والحالة.",
+                "operationId": "adminKpis",
+                "responses": {
+                    "200": {
+                        "description": "مؤشرات الأداء"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "تسجيل الدخول",
+                "description": "تسجيل دخول المواطن عبر رقم الهاتف وكلمة المرور.",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "0500000000"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم تسجيل الدخول بنجاح"
+                    },
+                    "401": {
+                        "description": "بيانات الدخول غير صحيحة"
+                    }
+                }
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "إنشاء حساب جديد",
+                "description": "إنشاء حساب مواطن جديد للحصول على توكن الوصول.",
+                "operationId": "authRegister",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "أحمد محمد"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "0500000001"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "national_id": {
+                                        "type": "string",
+                                        "example": "1000000001"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم إنشاء الحساب بنجاح"
+                    },
+                    "422": {
+                        "description": "خطأ في التحقق من البيانات"
+                    }
+                }
+            }
+        },
+        "/api/reports": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "جلب قائمة بلاغات المواطن",
+                "description": "ترجع هذه الواجهة قائمة بجميع البلاغات التي رفعها المستخدم الحالي.",
+                "operationId": "getUserReports",
+                "responses": {
+                    "200": {
+                        "description": "عملية ناجحة"
+                    },
+                    "401": {
+                        "description": "غير مصرح (Unauthenticated)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "رفع بلاغ جديد",
+                "description": "إنشاء بلاغ جديد بالموقع والصور والوصف.",
+                "operationId": "storeReport",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "lat",
+                                    "lng",
+                                    "description",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "lat": {
+                                        "type": "number",
+                                        "example": 24.7136
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "example": 46.6753
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "يوجد تسريب مياه في الشارع"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "images[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم إنشاء البلاغ"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/reports/{id}": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "عرض تفاصيل بلاغ محدد",
+                "description": "جلب تفاصيل البلاغ بالمعرف الخاص به.",
+                "operationId": "showReport",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "نجاح"
+                    },
+                    "404": {
+                        "description": "البلاغ غير موجود"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/reports/{id}/feedback": {
+            "post": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "تقييم البلاغ بعد إغلاقه",
+                "description": "إضافة تقييم من المواطن على جودة حل المشكلة.",
+                "operationId": "reportFeedback",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_rating"
+                                ],
+                                "properties": {
+                                    "user_rating": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "user_feedback": {
+                                        "type": "string",
+                                        "example": "عمل ممتاز وسريع"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم التقييم بنجاح"
+                    },
+                    "403": {
+                        "description": "غير مصرح"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Addressing",
+            "description": "Addressing"
+        },
+        {
+            "name": "Admin",
+            "description": "Admin"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Reports",
+            "description": "Reports"
+        }
+    ]
+}

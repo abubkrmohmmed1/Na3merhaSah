@@ -6,12 +6,29 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
-    /**
-     * Real login using Sanctum
-     */
+    #[OA\Post(
+        path: '/api/login',
+        operationId: 'authLogin',
+        summary: 'تسجيل الدخول',
+        description: 'تسجيل دخول المواطن عبر رقم الهاتف وكلمة المرور.',
+        tags: ['Auth']
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['phone', 'password'],
+            properties: [
+                new OA\Property(property: 'phone', type: 'string', example: '0500000000'),
+                new OA\Property(property: 'password', type: 'string', example: 'password123')
+            ]
+        )
+    )]
+    #[OA\Response(response: 200, description: 'تم تسجيل الدخول بنجاح')]
+    #[OA\Response(response: 401, description: 'بيانات الدخول غير صحيحة')]
     public function login(Request $request)
     {
         $request->validate([
@@ -38,9 +55,27 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Real registration
-     */
+    #[OA\Post(
+        path: '/api/register',
+        operationId: 'authRegister',
+        summary: 'إنشاء حساب جديد',
+        description: 'إنشاء حساب مواطن جديد للحصول على توكن الوصول.',
+        tags: ['Auth']
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['name', 'phone', 'password'],
+            properties: [
+                new OA\Property(property: 'name', type: 'string', example: 'أحمد محمد'),
+                new OA\Property(property: 'phone', type: 'string', example: '0500000001'),
+                new OA\Property(property: 'password', type: 'string', example: 'password123'),
+                new OA\Property(property: 'national_id', type: 'string', example: '1000000001')
+            ]
+        )
+    )]
+    #[OA\Response(response: 201, description: 'تم إنشاء الحساب بنجاح')]
+    #[OA\Response(response: 422, description: 'خطأ في التحقق من البيانات')]
     public function register(Request $request)
     {
         try {

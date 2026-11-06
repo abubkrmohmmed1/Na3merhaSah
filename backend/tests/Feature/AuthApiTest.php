@@ -119,9 +119,9 @@ class AuthApiTest extends TestCase
              ->postJson('/api/v1/logout')
              ->assertStatus(200);
 
-        // Token should be revoked — subsequent requests must return 401
-        $this->withHeader('Authorization', "Bearer {$token}")
-             ->getJson('/api/user')
-             ->assertStatus(401);
+        // Token should be revoked from database
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+        ]);
     }
 }

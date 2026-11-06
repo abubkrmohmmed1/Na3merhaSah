@@ -81,7 +81,7 @@ class B2BOrderController extends Controller
             DB::commit();
 
             // Trigger Quest Bridge
-            \App\Domains\Spatial\Services\QuestBridgeService::bridgeOrderToQuests($orderId);
+            app(\App\Domains\Spatial\Services\QuestBridgeService::class)->bridgeOrderToQuests($orderId);
 
             return response()->json([
                 'status' => 'success',

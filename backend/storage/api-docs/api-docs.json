@@ -1,0 +1,1389 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "توثيق واجهات نظام نعمرها صح",
+        "description": "API Documentation for Namerha Sah platform",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/addresses/reverse": {
+            "post": {
+                "tags": [
+                    "Addressing"
+                ],
+                "summary": "جلب العنوان من الإحداثيات",
+                "description": "تحويل خطوط الطول والعرض (lat, lng) إلى عنوان مقروء S2 Token.",
+                "operationId": "addressReverse",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "lat",
+                                    "lng"
+                                ],
+                                "properties": {
+                                    "lat": {
+                                        "type": "number",
+                                        "example": 24.7136
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "example": 46.6753
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "نجاح"
+                    },
+                    "404": {
+                        "description": "لم يتم العثور على عنوان"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/addresses/search": {
+            "get": {
+                "tags": [
+                    "Addressing"
+                ],
+                "summary": "البحث عن عنوان",
+                "description": "البحث النصي عن العناوين في قاعدة البيانات الجغرافية.",
+                "operationId": "addressSearch",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "كلمة البحث",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "للبحث الأقرب للموقع",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "للبحث الأقرب للموقع",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "نتائج البحث"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "تسجيل الدخول",
+                "description": "تسجيل دخول المواطن عبر رقم الهاتف وكلمة المرور.",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "0500000000"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم تسجيل الدخول بنجاح"
+                    },
+                    "401": {
+                        "description": "بيانات الدخول غير صحيحة"
+                    }
+                }
+            }
+        },
+        "/api/v1/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "إنشاء حساب جديد",
+                "description": "إنشاء حساب مواطن جديد للحصول على توكن الوصول.",
+                "operationId": "authRegister",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "أحمد محمد"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "0500000001"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "national_id": {
+                                        "type": "string",
+                                        "example": "1000000001"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم إنشاء الحساب بنجاح"
+                    },
+                    "422": {
+                        "description": "خطأ في التحقق من البيانات"
+                    }
+                }
+            }
+        },
+        "/api/v1/mobile/places/{id}": {
+            "get": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "تفاصيل مكان (للموبايل)",
+                "description": "معلومات كاملة عن مكان: الموقع + الحي + الخدمات القريبة + عدد التأكيدات والتصويتات.",
+                "operationId": "mobilePlaceDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "تفاصيل المكان"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/places": {
+            "post": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "إضافة مكان جديد (للموبايل)",
+                "operationId": "mobileAddPlace",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "lat",
+                                    "lng",
+                                    "layer"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "lat": {
+                                        "type": "number"
+                                    },
+                                    "lng": {
+                                        "type": "number"
+                                    },
+                                    "layer": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم إضافة المكان"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/places/{id}/flag": {
+            "post": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "الإبلاغ عن خطأ في مكان",
+                "operationId": "mobileFlagPlace",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم الإبلاغ"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/places/{id}/vote": {
+            "post": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "تقييم مكان",
+                "operationId": "mobileVotePlace",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rating"
+                                ],
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم التقييم"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/places/{id}/suggest-edit": {
+            "post": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "اقتراح تعديل على مكان",
+                "operationId": "suggestEdit",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "field",
+                                    "new_value"
+                                ],
+                                "properties": {
+                                    "field": {
+                                        "type": "string",
+                                        "enum": [
+                                            "name",
+                                            "layer",
+                                            "lat",
+                                            "lng",
+                                            "description"
+                                        ]
+                                    },
+                                    "new_value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم إرسال الاقتراح"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/confirm-suggestion/{id}": {
+            "post": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "تأكيد اقتراح تعديل",
+                "operationId": "confirmSuggestion",
+                "responses": {
+                    "200": {
+                        "description": "تم تأكيد الاقتراح"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/leaderboard": {
+            "get": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "لوحة المتصدرين",
+                "operationId": "leaderboard",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "week",
+                                "month",
+                                "all"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "المتصدرين"
+                    }
+                }
+            }
+        },
+        "/api/v1/mobile/profile": {
+            "get": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "ملف المستخدم — الإحصائيات والنقاط",
+                "operationId": "mobileProfile",
+                "responses": {
+                    "200": {
+                        "description": "ملف المستخدم"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/mobile/feed": {
+            "get": {
+                "tags": [
+                    "Mobile App"
+                ],
+                "summary": "آخر النشاطات على المنصة (للموبايل)",
+                "operationId": "mobileFeed",
+                "responses": {
+                    "200": {
+                        "description": "آخر النشاطات"
+                    }
+                }
+            }
+        },
+        "/api/v1/b2b/real-estate/property-card": {
+            "get": {
+                "tags": [
+                    "قطاع العقارات"
+                ],
+                "summary": "بطاقة العقار — تفاصيل كاملة عن موقع عقار",
+                "description": "تجيب الحي + المحلية + الولاية + S2 Token + عدد الخدمات القريبة (مدارس، مستشفيات، صيدليات، مطاعم) ضمن نصف قطر 500 متر.",
+                "operationId": "propertyCard",
+                "parameters": [
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "بطاقة العقار"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/b2b/insurance/verify-address": {
+            "get": {
+                "tags": [
+                    "قطاع التأمين"
+                ],
+                "summary": "التحقق من العنوان ودرجة الثقة",
+                "description": "يتحقق من صحة عنوان بناءً على إحداثياته ويرجع درجة الثقة (0-100%) والموقع الفعلي.",
+                "operationId": "verifyAddress",
+                "parameters": [
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "claimed_address",
+                        "in": "query",
+                        "description": "العنوان المدّعى (اختياري — للمقارنة)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "نتيجة التحقق"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/b2b/insurance/risk-profile": {
+            "get": {
+                "tags": [
+                    "قطاع التأمين"
+                ],
+                "summary": "تقييم المخاطر لموقع",
+                "description": "أقرب مستشفى، مركز إطفاء، مركز شرطة من موقع معين — لتقييم مخاطر التأمين.",
+                "operationId": "riskProfile",
+                "parameters": [
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ملف المخاطر"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/b2b/advertising/neighborhood-stats": {
+            "get": {
+                "tags": [
+                    "قطاع الإعلانات"
+                ],
+                "summary": "إحصائيات حي — للتخطيط الإعلاني",
+                "description": "إحصائيات كاملة عن حي: عدد المنشآت، توزيع الخدمات، أشهر الأنشطة.",
+                "operationId": "neighborhoodStats",
+                "parameters": [
+                    {
+                        "name": "neighborhood_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "إحصائيات الحي"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/spatial/states": {
+            "get": {
+                "tags": [
+                    "Spatial Lookup"
+                ],
+                "summary": "جلب الولايات",
+                "operationId": "getStates",
+                "responses": {
+                    "200": {
+                        "description": "قائمة الولايات"
+                    }
+                }
+            }
+        },
+        "/api/v1/spatial/localities": {
+            "get": {
+                "tags": [
+                    "Spatial Lookup"
+                ],
+                "summary": "جلب المحليات (اختيارياً حسب الولاية)",
+                "operationId": "getLocalities",
+                "parameters": [
+                    {
+                        "name": "state_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "قائمة المحليات"
+                    }
+                }
+            }
+        },
+        "/api/v1/spatial/neighborhoods": {
+            "get": {
+                "tags": [
+                    "Spatial Lookup"
+                ],
+                "summary": "جلب الأحياء داخل محلية",
+                "operationId": "getNeighborhoods",
+                "parameters": [
+                    {
+                        "name": "locality_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "قائمة الأحياء"
+                    }
+                }
+            }
+        },
+        "/api/v1/spatial/radius": {
+            "get": {
+                "tags": [
+                    "Spatial Lookup"
+                ],
+                "summary": "بحث دائري حول موقع (عام)",
+                "description": "للتطبيق — استعلام عن المعالم الجغرافية ضمن نصف قطر. نفس وظيفة B2B لكن بدون API Key.",
+                "operationId": "radiusSearchPublic",
+                "parameters": [
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "layer",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "نتائج البحث الدائري"
+                    }
+                }
+            }
+        },
+        "/api/v1/b2b/spatial/radius": {
+            "get": {
+                "tags": [
+                    "B2B Spatial"
+                ],
+                "summary": "بحث دائري حول موقع",
+                "description": "استعلام عن المعالم الجغرافية ضمن نصف قطر محدد حول إحداثيات معينة.",
+                "operationId": "radiusSearch",
+                "parameters": [
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "خط العرض",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "خط الطول",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "description": "نصف القطر بالمتر (10-50000)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "layer",
+                        "in": "query",
+                        "description": "تصفية حسب الطبقة (اختياري)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "عدد النتائج (1-200)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "نتائج البحث الدائري"
+                    },
+                    "404": {
+                        "description": "الطبقة غير موجودة"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/b2b/export": {
+            "get": {
+                "tags": [
+                    "B2B Export"
+                ],
+                "summary": "تصدير GeoJSON لطبقة كاملة",
+                "description": "تصدير جميع معالم طبقة محددة بصيغة GeoJSON. يدعم الطبقات: الولايات، المحليات، الأحياء، القرى والمدن، أو أي طبقة أخرى.",
+                "operationId": "exportGeoJSON",
+                "parameters": [
+                    {
+                        "name": "layer",
+                        "in": "query",
+                        "description": "اسم الطبقة (مثال: الأحياء, المحليات, الولايات)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON file download"
+                    },
+                    "404": {
+                        "description": "الطبقة غير موجودة"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/b2b/batch/geocode": {
+            "post": {
+                "tags": [
+                    "B2B Batch"
+                ],
+                "summary": "معالجة دفعة من الإحداثيات",
+                "description": "استقبال مصفوفة من الإحداثيات (lat/lng) وإرجاع العناوين + الأحياء + S2 Tokens. يدعم حتى 500 نقطة في المرة الواحدة.",
+                "operationId": "batchGeocode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "points"
+                                ],
+                                "properties": {
+                                    "points": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "lat": {
+                                                    "type": "number",
+                                                    "example": 15.5871
+                                                },
+                                                "lng": {
+                                                    "type": "number",
+                                                    "example": 32.5232
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "نتائج المعالجة الدفعية"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/spatial/pending-counts": {
+            "get": {
+                "tags": [
+                    "Spatial Lookup"
+                ],
+                "summary": "عدد التقديمات بانتظار المراجعة لكل محلية",
+                "operationId": "getPendingCounts",
+                "responses": {
+                    "200": {
+                        "description": "Counts per locality"
+                    }
+                }
+            }
+        },
+        "/api/v1/submissions/address": {
+            "post": {
+                "tags": [
+                    "Submissions"
+                ],
+                "summary": "تقديم عنوان جديد",
+                "description": "مستخدم يضيف عنوان شخصي أو عنوان خدمة جديد.",
+                "operationId": "submitAddress",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address_str",
+                                    "type",
+                                    "lat",
+                                    "lng"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "صيدلية النور"
+                                    },
+                                    "address_str": {
+                                        "type": "string",
+                                        "example": "شارع الجامعة، أم درمان"
+                                    },
+                                    "neighborhood": {
+                                        "type": "string",
+                                        "example": "الرياض"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "personal",
+                                            "service"
+                                        ]
+                                    },
+                                    "service_layer": {
+                                        "type": "string",
+                                        "example": "الصيدليات"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": 15.5871
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "example": 32.5232
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "notes": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم استلام العنوان بنجاح"
+                    },
+                    "401": {
+                        "description": "غير مصرح"
+                    },
+                    "422": {
+                        "description": "بيانات غير صحيحة"
+                    }
+                }
+            }
+        },
+        "/api/v1/submissions/neighborhood": {
+            "post": {
+                "tags": [
+                    "Submissions"
+                ],
+                "summary": "اقتراح حي جديد",
+                "operationId": "submitNeighborhood",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "lat",
+                                    "lng"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "lat": {
+                                        "type": "number"
+                                    },
+                                    "lng": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم استلام الاقتراح"
+                    }
+                }
+            }
+        },
+        "/api/v1/submissions/village": {
+            "post": {
+                "tags": [
+                    "Submissions"
+                ],
+                "summary": "اقتراح قرية جديدة",
+                "operationId": "submitVillage",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "lat",
+                                    "lng"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "lat": {
+                                        "type": "number"
+                                    },
+                                    "lng": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تم استلام الاقتراح"
+                    }
+                }
+            }
+        },
+        "/api/v1/submissions/my": {
+            "get": {
+                "tags": [
+                    "Submissions"
+                ],
+                "summary": "تقديماتي",
+                "operationId": "mySubmissions",
+                "responses": {
+                    "200": {
+                        "description": "قائمة التقديمات"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/submissions/address/{id}/approve": {
+            "post": {
+                "tags": [
+                    "Admin Submissions"
+                ],
+                "summary": "الموافقة على عنوان",
+                "description": "الموافقة على تقديم عنوان وإضافته إلى قاعدة البيانات الجغرافية.",
+                "operationId": "approveSubmission",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "معرف التقديم",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "تمت الموافقة على العنوان"
+                    },
+                    "403": {
+                        "description": "غير مصرح"
+                    },
+                    "404": {
+                        "description": "لم يتم العثور على التقديم"
+                    },
+                    "422": {
+                        "description": "تم مراجعة هذا العنوان سابقاً"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/submissions/address/{id}/reject": {
+            "post": {
+                "tags": [
+                    "Admin Submissions"
+                ],
+                "summary": "رفض عنوان",
+                "description": "رفض تقديم عنوان مع ذكر سبب الرفض.",
+                "operationId": "rejectSubmission",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "معرف التقديم",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string",
+                                        "example": "معلومات ناقصة"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم رفض العنوان"
+                    },
+                    "403": {
+                        "description": "غير مصرح"
+                    },
+                    "404": {
+                        "description": "لم يتم العثور على التقديم"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/submissions/proposal/{id}/approve": {
+            "post": {
+                "tags": [
+                    "Admin Submissions"
+                ],
+                "summary": "الموافقة على اقتراح (حي/قرية)",
+                "description": "الموافقة على اقتراح حدود حي أو قرية.",
+                "operationId": "approveProposal",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "معرف الاقتراح",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "تمت الموافقة على الاقتراح"
+                    },
+                    "403": {
+                        "description": "غير مصرح"
+                    },
+                    "404": {
+                        "description": "لم يتم العثور على الاقتراح"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/submissions/proposal/{id}/reject": {
+            "post": {
+                "tags": [
+                    "Admin Submissions"
+                ],
+                "summary": "رفض اقتراح (حي/قرية)",
+                "description": "رفض اقتراح حدود حي أو قرية مع ذكر سبب الرفض.",
+                "operationId": "rejectProposal",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "معرف الاقتراح",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string",
+                                        "example": "البيانات غير كافية"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تم رفض الاقتراح"
+                    },
+                    "403": {
+                        "description": "غير مصرح"
+                    },
+                    "404": {
+                        "description": "لم يتم العثور على الاقتراح"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/submissions/pending/count": {
+            "get": {
+                "tags": [
+                    "Admin Submissions"
+                ],
+                "summary": "عدد التقديمات بانتظار المراجعة",
+                "operationId": "pendingCount",
+                "responses": {
+                    "200": {
+                        "description": "Counts"
+                    },
+                    "403": {
+                        "description": "غير مصرح"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Addressing",
+            "description": "Addressing"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Mobile App",
+            "description": "Mobile App"
+        },
+        {
+            "name": "قطاع العقارات",
+            "description": "قطاع العقارات"
+        },
+        {
+            "name": "قطاع التأمين",
+            "description": "قطاع التأمين"
+        },
+        {
+            "name": "قطاع الإعلانات",
+            "description": "قطاع الإعلانات"
+        },
+        {
+            "name": "Spatial Lookup",
+            "description": "Spatial Lookup"
+        },
+        {
+            "name": "B2B Spatial",
+            "description": "B2B Spatial"
+        },
+        {
+            "name": "B2B Export",
+            "description": "B2B Export"
+        },
+        {
+            "name": "B2B Batch",
+            "description": "B2B Batch"
+        },
+        {
+            "name": "Submissions",
+            "description": "Submissions"
+        },
+        {
+            "name": "Admin Submissions",
+            "description": "Admin Submissions"
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+@startuml "Project Architecture"
+left to right direction
+
+package "Frontend" {
+    [Leaflet.js] as frontend
+    [HTML/CSS/JS] as ui
+    [MarkerCluster] as clustering
+}
+
+package "Backend (Laravel/PHP)" {
+    [AdminMapController] as mapCtrl
+    [AdminKPIController] as kpiCtrl
+    [GeoFeature Model] as geoModel
+    [MapLayer Model] as layerModel
+    [S2GeometryService] as s2Service
+}
+
+package "Database" {
+    [PostgreSQL] as db
+    [PostGIS] as postgis
+}
+
+package "External Services" {
+    [OpenStreetMap] as osm
+    [Google Maps/Leaflet] as leaflet
+}
+
+frontend --> leaflet : renders map
+frontend --> ui : displays data
+mapCtrl --> geoModel : queries
+kpiCtrl --> geoModel : queries
+geoModel --> db : reads/writes
+geoModel --> postgis : spatial queries
+layerModel --> db : reads
+s2Service --> geoModel : used by
+mapCtrl --> leaflet : provides GeoJSON
+osm -.-> mapCtrl : optional data source
+
+@enduml

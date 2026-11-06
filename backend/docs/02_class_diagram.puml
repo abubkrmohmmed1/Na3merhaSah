@@ -1,0 +1,81 @@
+@startuml "Class Diagram - Namerha Sah"
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class GeoFeature {
+  - id: UUID
+  - layer_id: UUID
+  - parent_id: UUID
+  - geom: PostGIS geometry
+  - properties: JSON
+  - status: string
+  - latitude: float
+  - longitude: float
+  - geometry_wkt: string
+  - s2_cell_id: string
+  - plus_code: string
+  - created_at: timestamp
+  - updated_at: timestamp
+  + parent(): BelongsTo
+  + children(): HasMany
+  + allChildren(): HasMany
+  + mapLayer(): BelongsTo
+  + autoDetectParent(): void
+  + getHierarchyLevelAttribute(): string
+  + getChildrenByLayer(layerName): HasMany
+  + scopeStates(): Scope
+  + scopeLocalities(): Scope
+  + scopeNeighborhoods(): Scope
+  + scopeVerified(): Scope
+  + toHierarchyArray(): array
+}
+
+class MapLayer {
+  - id: UUID
+  - name: string
+  - type: string
+  - order: int
+  - created_at: timestamp
+  - updated_at: timestamp
+  + geoFeatures(): HasMany
+}
+
+class AdminMapController {
+  + index(): View
+  + getHierarchy(): JsonResponse
+  + getAdminBoundaries(): JsonResponse
+  + getLayerPoints(): JsonResponse
+  + getAddresses(): JsonResponse
+}
+
+class AdminKPIController {
+  + index(): View
+  + getKPIs(): JsonResponse
+}
+
+class S2GeometryService {
+  + latLngToToken(lat: float, lng: float): string
+  + generatePlusCode(lat: float, lng: float): string
+}
+
+class Address {
+  - id: UUID
+  - address_str: string
+  - lat: float
+  - lng: float
+  - properties: JSON
+  + geoFeature(): BelongsTo
+}
+
+GeoFeature "1" -- "0..*" GeoFeature : parent > children
+GeoFeature "1" -- "1" MapLayer : belongs to
+GeoFeature "1" -- "0..1" Address : optional
+Address "1" -- "1" GeoFeature : belongs to
+AdminMapController ..> GeoFeature : uses
+AdminKPIController ..> GeoFeature : uses
+AdminMapController ..> S2GeometryService : uses
+AdminMapController ..> MapLayer : uses
+AdminKPIController ..> MapLayer : uses
+
+@enduml

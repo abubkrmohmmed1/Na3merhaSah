@@ -1,0 +1,113 @@
+{
+	"info": {
+		"name": "نعمرها صح API",
+		"description": "محرك الاستخبارات المكانية والعنونة الرقمية الأول في السودان\n\nجميع الطلبات تتطلب header: `X-API-Key`\n\nاحصل على مفتاح API من لوحة التحكم",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "in",
+				"value": "header"
+			},
+			{
+				"key": "value",
+				"value": "nrh_ضع_مفتاحك_هنا"
+			},
+			{
+				"key": "key",
+				"value": "X-API-Key"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "الملف الشخصي",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/profile"
+			}
+		},
+		{
+			"name": "الولايات",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/spatial/states"
+			}
+		},
+		{
+			"name": "المحليات",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/spatial/localities?state_id={{state_id}}"
+			}
+		},
+		{
+			"name": "الأحياء",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/spatial/neighborhoods?locality_id={{locality_id}}"
+			}
+		},
+		{
+			"name": "بحث دائري (Radius Search)",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/spatial/radius?lat=14.4&lng=33.5&radius=1000&limit=10"
+			}
+		},
+		{
+			"name": "عكس جغرافي (Reverse Geocode)",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/addresses/reverse?lat=15.5871&lng=32.5232"
+			}
+		},
+		{
+			"name": "بحث عناوين (Search)",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/addresses/search?query=الرياض"
+			}
+		},
+		{
+			"name": "تصدير GeoJSON",
+			"request": {
+				"method": "GET",
+				"url": "{{base_url}}/api/v1/b2b/export?layer=الأحياء"
+			}
+		},
+		{
+			"name": "معالجة دفعة (Batch Geocode)",
+			"request": {
+				"method": "POST",
+				"url": "{{base_url}}/api/v1/b2b/batch/geocode",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"points\": [\n    {\"lat\": 15.5871, \"lng\": 32.5232},\n    {\"lat\": 15.6025, \"lng\": 32.5340}\n  ]\n}"
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "state_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "locality_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

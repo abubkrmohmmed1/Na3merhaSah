@@ -1,0 +1,56 @@
+@startuml "Use Case Diagram - Namerha Sah"
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Admin User" as admin
+actor "System" as system
+
+rectangle "Namerha Sah - Use Cases" {
+
+  usecase "View Admin Map" as UC1
+  usecase "View Hierarchy Panel" as UC2
+  usecase "Zoom to Feature" as UC3
+  usecase "Add New Locality" as UC4
+  usecase "Edit Locality" as UC5
+  usecase "Delete Locality" as UC6
+  usecase "Add Neighborhood" as UC7
+  usecase "Auto-Detect Parent" as UC8
+  usecase "View KPI Dashboard" as UC9
+  usecase "Filter Layers" as UC10
+  usecase "Export GeoJSON" as UC11
+  usecase "Import OSM Data" as UC12
+
+}
+
+admin --> UC1 : "views map"
+admin --> UC2 : "navigates hierarchy"
+admin --> UC3 : "clicks on feature"
+admin --> UC4 : "adds new locality"
+admin --> UC5 : "edits locality info"
+admin --> UC6 : "deletes locality"
+admin --> UC7 : "adds neighborhood"
+admin --> UC8 : "triggers auto-detect"
+admin --> UC9 : "views KPIs"
+admin --> UC10 : "filters layers"
+admin --> UC11 : "exports data"
+admin --> UC12 : "imports OSM data"
+
+system --> UC8 : "auto-detect parent via ST_Contains"
+UC4 ..> UC8 : "triggers auto-detect"
+UC7 ..> UC8 : "triggers auto-detect"
+
+note right of UC4
+  - User provides coordinates
+  - System creates Point geometry
+  - autoDetectParent() finds parent
+  - Updates parent_id
+end note
+
+note right of UC8
+  Uses ST_Contains(
+  state.geom, locality.geom)
+  to find containing state
+end note
+
+@enduml

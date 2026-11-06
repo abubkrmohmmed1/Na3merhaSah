@@ -1,0 +1,68 @@
+name: frontend
+description: "نعمرها صح - ويكيبيديا الخرائط"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Map & Location
+  google_maps_flutter: ^2.10.1
+  geolocator: ^13.0.2
+
+  # State Management
+  flutter_bloc: ^9.1.0
+  equatable: ^2.0.7
+
+  # Dependency Injection & Routing
+  get_it: ^8.0.3
+  go_router: ^14.8.1
+
+  # Storage & Offline
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Networking
+  dio: ^5.8.0
+
+  # Google Fonts (Arabic support)
+  google_fonts: ^6.2.1
+
+  # Permissions
+  permission_handler: ^11.3.1
+
+  # Image
+  image_picker: ^1.1.2
+
+  # Storage
+  shared_preferences: ^2.3.0
+
+  # Icons
+  ionicons: ^0.2.2
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.1
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.jpeg"
+  min_sdk_android: 21
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.jpeg

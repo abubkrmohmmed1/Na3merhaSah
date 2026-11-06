@@ -1,0 +1,109 @@
+@startuml
+
+!define RECTANGLE class
+
+package "Namerha Sah - Project" {
+
+    package "Models" {
+        class GeoFeature {
+            - id: UUID
+            - layer_id: UUID
+            - parent_id: UUID
+            - geom: PostGIS geometry
+            - properties: JSON
+            - status: string
+            - latitude: float
+            - longitude: float
+            - geometry_wkt: string
+            + parent(): BelongsTo
+            + children(): HasMany
+            + allChildren(): HasMany
+            + mapLayer(): BelongsTo
+            + autoDetectParent(): void
+            + getHierarchyLevelAttribute(): string
+            + getChildrenByLayer(layerName): HasMany
+            + scopeStates(): Scope
+            + scopeLocalities(): Scope
+            + scopeNeighborhoods(): Scope
+            + scopeVerified(): Scope
+            + toHierarchyArray(): array
+        }
+
+        class MapLayer {
+            - id: UUID
+            - name: string
+            - type: string
+            - order: int
+            + geoFeatures(): HasMany
+        }
+    }
+
+    package "Controllers" {
+        class AdminMapController {
+            + index(): View
+            + getHierarchy(): JsonResponse
+            + getAdminBoundaries(): JsonResponse
+            + getLayerPoints(): JsonResponse
+            + getAddresses(): JsonResponse
+        }
+
+        class AdminKPIController {
+            + index(): View
+            + getKPIs(): JsonResponse
+        }
+    }
+
+    package "Views" {
+        class map_blade_php {
+            + Hierarchy Panel (Tree View)
+            + Leaflet Map
+            + Feature Tooltip
+            + Layer Filter Controls
+        }
+
+        class kpi_index_blade_php {
+            + Stat Cards
+            + KPI Charts
+        }
+    }
+
+    package "Services" {
+        class S2GeometryService {
+            + latLngToToken(lat, lng): string
+            + generatePlusCode(lat, lng): string
+        }
+    }
+
+    package "Database" {
+        class "PostgreSQL + PostGIS" {
+            + geo_features table
+            + map_layers table
+            + ST_Contains()
+            + ST_GeomFromText()
+            + ST_AsText()
+            + ST_X(), ST_Y()
+        }
+    }
+
+    package "Frontend" {
+        class "Leaflet.js" {
+            + Map initialization
+            + GeoJSON rendering
+            + CircleMarker for points
+            + FeatureGroup layers
+            + MarkerCluster for performance
+        }
+    }
+}
+
+// Relationships
+GeoFeature "1" -- "0..*" GeoFeature : parent > children
+GeoFeature "1" -- "1" MapLayer : belongs to
+AdminMapController ..> GeoFeature : uses
+AdminMapController ..> S2GeometryService : uses
+AdminMapController ..> "PostgreSQL + PostGIS" : queries
+map_blade_php ..> "Leaflet.js" : renders
+map_blade_php ..> AdminMapController : fetches data from
+AdminKPIController ..> "PostgreSQL + PostGIS" : queries
+
+@enduml

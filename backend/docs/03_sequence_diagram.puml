@@ -1,0 +1,47 @@
+@startuml "Sequence Diagram - Hierarchy Navigation"
+
+actor "Admin User" as user
+participant "Browser" as browser
+participant "AdminMapController" as ctrl
+participant "GeoFeature Model" as model
+participant "PostgreSQL + PostGIS" as db
+participant "Leaflet.js" as leaflet
+
+user -> browser: Clicks on hierarchy item
+browser -> ctrl: GET /admin/map
+activate ctrl
+
+ctrl -> model: getHierarchy()
+activate model
+
+model -> db: SELECT * FROM geo_features WHERE layer_id = ?
+activate db
+db --> model: Returns states, localities, neighborhoods
+deactivate db
+
+model -> model: Build hierarchy tree
+model --> ctrl: Returns hierarchy JSON
+deactivate model
+
+ctrl -> ctrl: Render map.blade.php
+ctrl -> leaflet: Initialize map
+activate leaflet
+
+leaflet -> leaflet: Create layers (statesPane, localitiesPane, neighborhoodsPane)
+leaflet -> leaflet: Draw polygons for admin boundaries
+leaflet -> leaflet: Add markers for services
+
+ctrl -> browser: HTML + JS + GeoJSON
+deactivate ctrl
+
+user -> leaflet: Clicks on locality in hierarchy
+activate leaflet
+
+leaflet -> leaflet: Animate zoom to locality bounds
+leaflet -> leaflet: Highlight clicked feature
+leaflet -> leaflet: Show tooltip with name and children count
+
+user -> leaflet: Clicks on map feature
+leaflet -> browser: Show feature tooltip
+
+@enduml

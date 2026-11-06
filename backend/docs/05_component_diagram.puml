@@ -1,0 +1,50 @@
+@startuml "Component Diagram - Namerha Sah"
+
+skinparam componentStyle uml2
+skinparam backgroundColor #FEFEFE
+
+package "Frontend" {
+  [Leaflet.js Map] as leaflet
+  [Hierarchy Panel] as hierarchy
+  [Feature Tooltip] as tooltip
+  [Layer Filter] as filter
+}
+
+package "Backend (Laravel)" {
+  [AdminMapController] as mapCtrl
+  [AdminKPIController] as kpiCtrl
+  [GeoFeature Model] as geoModel
+  [MapLayer Model] as layerModel
+  [S2GeometryService] as s2Service
+  [autoDetectParent()] as autoDetect
+}
+
+package "Database" {
+  [PostgreSQL] as db
+  [PostGIS Extensions] as postgis
+  [geo_features table] as geoTable
+  [map_layers table] as layerTable
+}
+
+package "External Services" {
+  [OpenStreetMap API] as osm
+  [Google Maps / CARTO Tiles] as tiles
+}
+
+leaflet --> tiles : "renders basemap tiles"
+hierarchy --> mapCtrl : "fetches hierarchy data"
+tooltip --> geoModel : "queries feature info"
+filter --> mapCtrl : "filters layers"
+
+mapCtrl --> geoModel : "queries features"
+kpiCtrl --> geoModel : "queries KPIs"
+geoModel --> layerModel : "belongs to"
+geoModel --> autoDetect : "uses for parent detection"
+autoDetect --> postgis : "ST_Contains() query"
+geoModel --> db : "CRUD operations"
+postgis --> db : "spatial functions"
+layerTable --> db : "stores layer definitions"
+
+osm -.-> geoTable : "optional data source"
+
+@enduml

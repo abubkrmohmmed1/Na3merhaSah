@@ -1,0 +1,51 @@
+@startuml "Activity Diagram - Add New Locality"
+
+start
+
+:Admin User fills locality form;
+note right
+  - Name
+  - Coordinates (lat/lng)
+  - Optional: Address details
+end note
+
+:User clicks "Save Locality";
+
+:AdminMapController receives request;
+
+:Validate input data;
+note right
+  - Check required fields
+  - Validate coordinates
+end note
+
+if "Valid input?" then (yes)
+  :Create GeoFeature instance;
+  :Set layer_id = localities layer;
+  :Set properties (name, type);
+  :Set geom = ST_GeomFromText(POINT(lng lat));
+
+  :Call autoDetectParent();
+  note right
+    - Find parent state using
+      ST_Contains(state.geom, locality.geom)
+    - Set parent_id automatically
+  end note
+
+  if "Parent found?" then (yes)
+    :Link locality to parent state;
+  else (no)
+    :Mark as unlinked;
+  endif
+
+  :Save to PostgreSQL;
+  :Return success response;
+
+else (no)
+  :Return validation errors;
+  :Display error messages;
+endif
+
+stop
+
+@enduml

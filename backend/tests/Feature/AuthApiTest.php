@@ -31,7 +31,7 @@ class AuthApiTest extends TestCase
             'phone'    => '0912345678',
             'email'    => 'test@example.com',
             'password' => Hash::make('password123'),
-            'role'     => 'user',
+            'role'     => 'citizen',
         ], $overrides));
     }
 

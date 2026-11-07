@@ -1,0 +1,22 @@
+{
+    "preset": "laravel",
+    "exclude": [
+        "scratch",
+        "storage",
+        "bootstrap/cache"
+    ],
+    "notName": [
+        "a.php",
+        "check_*.php",
+        "create_*.php",
+        "debug_*.php",
+        "final_*.php",
+        "link_*.php",
+        "reset_*.php",
+        "temp_*.php",
+        "test_*.php",
+        "count_*.php",
+        "fix_tokens.php",
+        "get_names.php"
+    ]
+}

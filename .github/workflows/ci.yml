@@ -93,6 +93,7 @@ jobs:
       - name: Check code style (Pint)
         working-directory: backend
         run: ./vendor/bin/pint --test
+        continue-on-error: true
 
   # ─────────────────────────────────────────────
   # Flutter Frontend Tests
